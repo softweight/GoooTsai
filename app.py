@@ -1,6 +1,11 @@
 import re
 import twstock
 from discord.ext import commands,tasks
+import time
+
+## TODO : del function : which can del in the list
+## TODO : Get CATEGORYID object by ID
+
 
 bot = commands.Bot(command_prefix='!')    #change your prefix what you like
 
@@ -23,7 +28,7 @@ def getStockstate(name):
             aftername = f"{name}🔴{newprice}"
         else:
             aftername = f"{name}🟢{newprice}"
-        aftername = aftername.replace(".","_")
+        aftername = aftername.replace(".","･")
     return aftername
 
 def check():
@@ -51,10 +56,17 @@ async def new(ctx, arg):
         guilds = await bot.fetch_guilds(limit=150).flatten()
         for guild in guilds:
             textChannel,textChannelName,myCategory = check()
+            print(textChannelName)
             if arg not in textChannelName:
                 channel = await guild.create_text_channel(arg)
-                after_name = getStockstate(arg)
-                await channel.edit(name=after_name,category=myCategory)
+                try:
+                    newName = getStockstate(arg)
+                    print(newName)
+                    await channel.edit(name=newName,category=myCategory)
+                except:
+                    print("Ask price fail")
+                    await channel.edit(name=arg,category=myCategory)
+                
                 await ctx.send("Done!")
             else:
                 await ctx.send("already exist...")
@@ -66,7 +78,7 @@ async def on_ready():
     print(bot.user)
     print("Bot Online.\n" + "-"*10)
 
-@tasks.loop(seconds = 30) # repeat after every 30 seconds
+@tasks.loop(seconds = 60) # repeat after every 60 seconds
 async def upadtename():
     print("update name")
     textChannel,textChannelName,myCategory = check()
@@ -76,17 +88,24 @@ async def upadtename():
         if not re.match(regex, ch.name):
             continue
         else:
+            print(ch.name)
             stockname = regex.search(ch.name).group()
             # time = date.today().strftime('%Y-%m-%d')
-            after_name = getStockstate(stockname)
-            await ch.edit(name=after_name)
+            try:
+                newName = getStockstate(stockname)
+                await ch.edit(name=newName)
+                time.sleep(10)
+            except:
+                print("Ask price fail")
+                time.sleep(10)
+                continue
 
 
 #main
 def main():
     upadtename.start()
     bot.run(TOKEN)
-
+    # print(getStockstate("006208"))
 
 if __name__ == "__main__":
     main()
