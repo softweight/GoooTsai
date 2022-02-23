@@ -1,9 +1,7 @@
 import re
-import twstock
 import requests
 from lxml import etree
 from discord.ext import commands,tasks
-import time
 
 ## TODO : del function : which can del in the list
 ## TODO : Get CATEGORYID object by ID
@@ -36,21 +34,6 @@ def getStockstate(name):
         aftername = f"{name}🔴{price}"
     aftername = aftername.replace(".","･")
     return aftername
-# def getStockstate(name):
-#     stock = twstock.realtime.get(name)
-#     openprice = twstock.Stock(name).price[-2]
-#     aftername = name
-#     # print(openprice)
-#     if stock['success']:
-#         newprice = float(stock["realtime"]["latest_trade_price"])
-#         # print(newprice)
-#         if newprice >= openprice:
-#             aftername = f"{name}🔴{newprice}"
-#         else:
-#             aftername = f"{name}🟢{newprice}"
-#         aftername = aftername.replace(".","･")
-#     return aftername
-
 
 def check():
     global mycategory,text_channel_list
